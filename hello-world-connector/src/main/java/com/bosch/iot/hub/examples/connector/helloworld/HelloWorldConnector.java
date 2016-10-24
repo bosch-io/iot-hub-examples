@@ -56,13 +56,13 @@ public final class HelloWorldConnector
 
    private static final String SOLUTION_ID = "<your-solution-id>"; // TODO insert your Solution ID here
    private static final String SOLUTION_API_TOKEN = "<your-solution-APIToken>";
-   // TODO insert your Solution API Token here
+      // TODO insert your Solution API Token here
    private static final String CLIENT_ID = SOLUTION_ID + ":connector";
    private static final String CONSUMER_CLIENT_ID = SOLUTION_ID + ":consumer";
 
    private static final URL KEYSTORE_LOCATION = HelloWorldConnector.class.getResource("/HubClient.jks");
    private static final String KEYSTORE_PASSWORD = "<your-keystore-password>";
-   // TODO insert your keystore password here
+      // TODO insert your keystore password here
    private static final String ALIAS = "<ALIAS>"; // TODO insert your alias here
    private static final String ALIAS_PASSWORD = "<your-alias-password>"; // TODO insert your alias password here
 
@@ -118,11 +118,11 @@ public final class HelloWorldConnector
        * Proxy configuration is optional and can be added if needed.
        */
       final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-              .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI) //
-              .keyStore(KEYSTORE_LOCATION.toURI(), KEYSTORE_PASSWORD) //
-              .alias(ALIAS, ALIAS_PASSWORD) //
-              .clientId(CLIENT_ID) //
-              .apiToken(SOLUTION_API_TOKEN); //
+         .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI) //
+         .keyStore(KEYSTORE_LOCATION.toURI(), KEYSTORE_PASSWORD) //
+         .alias(ALIAS, ALIAS_PASSWORD) //
+         .clientId(CLIENT_ID) //
+         .apiToken(SOLUTION_API_TOKEN); //
       // .proxy(URI.create("http://" + <proxy-host> + ":" + <proxy port>)); //
 
       return builder.build();

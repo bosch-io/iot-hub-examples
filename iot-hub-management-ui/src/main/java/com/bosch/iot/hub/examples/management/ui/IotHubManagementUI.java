@@ -131,26 +131,28 @@ public class IotHubManagementUI extends Application {
             clientIdTextField = new TextField();
             clientIdTextField.setText(props.getProperty("clientId"));
             grid.add(clientIdTextField, 1, 1);
+            Label apiTokenIdSetting = new Label("API Token:");
+            grid.add(apiTokenIdSetting, 0, 2);
             apiTokenTextField = new TextField();
             apiTokenTextField.setText(props.getProperty("apiToken"));
-            grid.add(apiTokenTextField, 1, 1);
+            grid.add(apiTokenTextField, 1, 2);
             Label aliasNameLabel = new Label("Alias name:");
-            grid.add(aliasNameLabel, 0, 2);
+            grid.add(aliasNameLabel, 0, 3);
             TextField aliasNameTextField = new TextField();
             aliasNameTextField.setText(props.getProperty("keyAlias"));
-            grid.add(aliasNameTextField, 1, 2);
+            grid.add(aliasNameTextField, 1, 3);
             Label aliasPasswordLabel = new Label("Alias password:");
-            grid.add(aliasPasswordLabel, 0, 3);
+            grid.add(aliasPasswordLabel, 0, 4);
             PasswordField aliasPasswordBox = new PasswordField();
             aliasPasswordBox.setText(props.getProperty("keyAliasPassword"));
-            grid.add(aliasPasswordBox, 1, 3);
+            grid.add(aliasPasswordBox, 1, 4);
             Label pw = new Label("Private Key password:");
-            grid.add(pw, 0, 4);
+            grid.add(pw, 0, 5);
             PasswordField pwBox = new PasswordField();
             pwBox.setText(props.getProperty("keystorePassword"));
-            grid.add(pwBox, 1, 4);
+            grid.add(pwBox, 1, 5);
             Label privateKeyLabel = new Label("Private Key:");
-            grid.add(privateKeyLabel, 0, 5);
+            grid.add(privateKeyLabel, 0, 6);
             try {
                 if (props.getProperty("keystoreLocation") != null && !props.getProperty("keystoreLocation").isEmpty()) {
                     privateKeyFile = new URI(props.getProperty("keystoreLocation"));
@@ -167,7 +169,7 @@ public class IotHubManagementUI extends Application {
                     privateKeyFile = file.toURI();
                 }
             });
-            grid.add(openButton, 1, 5);
+            grid.add(openButton, 1, 6);
             final Button connectButton = new Button("Connect to Bosch IoT Hub...");
             connectButton.setOnAction(connectActionEvent -> {
                 try {
@@ -204,7 +206,7 @@ public class IotHubManagementUI extends Application {
                     LOGGER.warn("Could not establish a connection: " + e.toString());
                 }
             });
-            grid.add(connectButton, 0, 6, 2, 1);
+            grid.add(connectButton, 0, 7, 2, 1);
 
             Scene dialogScene = new Scene(grid, 500, 300);
             dialog.setScene(dialogScene);
@@ -629,7 +631,5 @@ public class IotHubManagementUI extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public static void main(String[] args) {launch(args);}
 }
