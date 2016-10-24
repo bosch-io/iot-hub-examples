@@ -2,7 +2,7 @@
 
 This example shows an implementation of a general user interface for the Bosch IoT Hub.
 
- 
+  
 # How to run it?
 
 ## Create a Solution with a private/public key
@@ -19,6 +19,7 @@ or can be set in the connection window of this user interface. Please make sure 
 
 ```
 #clientId=### your client id ###
+#apiToken=### your api token ###
 #keystoreLocation=### file:key store location ###
 #keystorePassword=### your key store password ###
 #keyAlias=### alias name ###

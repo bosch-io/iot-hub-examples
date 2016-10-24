@@ -223,7 +223,7 @@ public class HttpConnectorController
       final String subscriptionId = topic + ':' + request.getSession().getId();
 
       LOGGER
-         .info("Subscribing for server-sent events for messages with topic <{}> using client <{}>", topic, consumerId);
+              .info("Subscribing for server-sent events for messages with topic <{}> using client <{}>", topic, consumerId);
       final SseEmitter emitter = new SseEmitter(120000L);
       // after 2 minutes of inactivity the HTTP connection will be closed
       emitter.onCompletion(() ->
@@ -256,9 +256,9 @@ public class HttpConnectorController
                // write the message payload as one or more "data" fields in the event stream
                // if the payload contains '\n' or '\r' characters then it will be split into multiple "data" fields
                payload.map(Payload::getContentAsByteArray)//
-                  .map(payloadBytes -> payloadStringForMediaType(payloadBytes, payloadMediaType))//
-                  .map(PAYLOAD_LINES_PATTERN::splitAsStream).orElseGet(Stream::<String>empty)//
-                  .forEach(payloadLine -> sseBuilder.data(payloadLine, payloadMediaType));
+                       .map(payloadBytes -> payloadStringForMediaType(payloadBytes, payloadMediaType))//
+                       .map(PAYLOAD_LINES_PATTERN::splitAsStream).orElseGet(Stream::<String>empty)//
+                       .forEach(payloadLine -> sseBuilder.data(payloadLine, payloadMediaType));
 
                LOGGER.info("Sending server event for consumed message with topic <{}>", messageTopicPath);
                try
@@ -274,7 +274,7 @@ public class HttpConnectorController
             else
             {
                LOGGER.info("Dropping message with topic <{}>, topic path does not match the subscription path <{}>",
-                  messageTopicPath, topic);
+                       messageTopicPath, topic);
             }
 
          });
@@ -305,7 +305,7 @@ public class HttpConnectorController
    public ModelAndView consumedMessagesLog(HttpServletRequest request)
    {
       String source =
-         request.getRequestURL().toString().replaceFirst("/http-connector/messagelog/", "/http-connector/messages/");
+              request.getRequestURL().toString().replaceFirst("/http-connector/messagelog/", "/http-connector/messages/");
       String topic = extractTopicPath(request, "/http-connector/messagelog/**");
 
       LOGGER.info("Displaying server-sent events log for messages with topic <{}> using source <{}>", topic, source);
@@ -333,7 +333,7 @@ public class HttpConnectorController
 
       // endpoint of the bosch iot cloud service
       URI iotHubEndpoint =
-         URI.create(configuration.getProperty("iotHubEndpoint", "wss://hub.apps.bosch-iot-cloud.com"));
+              URI.create(configuration.getProperty("iotHubEndpoint", "wss://hub.apps.bosch-iot-cloud.com"));
 
       // location and password for the key store holding your private key
       // client authentication is implemented by a handshake using an asymmetric key-pair
@@ -351,11 +351,11 @@ public class HttpConnectorController
          final URI keystoreUri = Thread.currentThread().getContextClassLoader().getResource(keystoreLocation).toURI();
 
          final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-            .endPoint(iotHubEndpoint) //
-            .keyStore(keystoreUri, keystorePassword) //
-            .alias(keyAlias, keyAliasPassword) //
-            .clientId(clientId) //
-            .apiToken(clientApiToken);
+                 .endPoint(iotHubEndpoint) //
+                 .keyStore(keystoreUri, keystorePassword) //
+                 .alias(keyAlias, keyAliasPassword) //
+                 .clientId(clientId) //
+                 .apiToken(clientApiToken);
 
          // http proxy settings, optional
          String httpProxyHost = configuration.getProperty("httpProxyHost");
@@ -367,7 +367,7 @@ public class HttpConnectorController
          if (httpProxyHost != null && httpProxyPort != null)
          {
             IotHubClientBuilder.OptionalProxyPropertiesStep proxy =
-               builder.proxy(URI.create("http://" + httpProxyHost + ':' + httpProxyPort));
+                    builder.proxy(URI.create("http://" + httpProxyHost + ':' + httpProxyPort));
 
             if (httpProxyPrincipal != null && httpProxyPassword != null)
             {

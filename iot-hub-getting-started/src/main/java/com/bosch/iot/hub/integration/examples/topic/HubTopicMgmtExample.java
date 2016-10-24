@@ -39,8 +39,8 @@ import com.bosch.iot.hub.model.topic.TopicPath;
 /**
  * Preconditions of running the example :
  * <ol>
- * <li>Register your solution to get solution_id, and upload the public key from /HubExampleClient.jks (or create your
- * own Key-pair)</li>
+ * <li>Register your solution, get solution_id and upload the public key from /HubClient.jks (see steps described at
+ * <a href="https://hub.apps.bosch-iot-cloud.com/dokuwiki/doku.php?id=020_getting_started:booking">Book the Bosch IoT Hub cloud service</a>)</li>
  * <li>Use solution_id as your system property "SOLUTION_ID"</li>
  * <li>Configure system property "HUB_CLOUD_ENDPOINT", using actual Websocket endpoint of IoT Hub Service</li>
  * <li>Configure system property "PROXY_URI" if you have one, using format http://host:port</li>
@@ -49,7 +49,6 @@ import com.bosch.iot.hub.model.topic.TopicPath;
  *Examples of System Properties:
  * <br/>
  * <strong> -DSOLUTION_ID=xx -DHUB_CLOUD_ENDPOINT=wss://xx.com -DPROXY_URI=http://xx.com</strong>
-
  */
 public final class HubTopicMgmtExample
 {
@@ -64,10 +63,15 @@ public final class HubTopicMgmtExample
       solutionClient.createTopic(HubClientUtil.SOLUTION_TOPIC).get(HubClientUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
 
       // create solution sub topic
-      TopicPath subTopicPath = TopicPath.of(HubClientUtil.SOLUTION_SUBTOPIC);
-      solutionClient.createTopic(subTopicPath).thenAccept(topic -> {
+      solutionClient.createTopic(HubClientUtil.SOLUTION_SUBTOPIC).thenAccept(topic -> {
          // you can do something here.
-         System.out.println("A sub topic is created with path " + topic.getPath().toString());
+         System.out.println("Created topic: " + topic);
+      }).get(10, TimeUnit.SECONDS);
+
+      // retrieve solution sub topic
+      solutionClient.retrieveTopic(HubClientUtil.SOLUTION_SUBTOPIC).thenAccept(topic -> {
+         // you can do something here.
+         System.out.println("Retrieved topic: " + topic);
       }).get(10, TimeUnit.SECONDS);
 
       // remove the root topic of the solution

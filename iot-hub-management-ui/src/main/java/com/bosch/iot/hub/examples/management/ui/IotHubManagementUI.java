@@ -73,7 +73,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -93,6 +92,7 @@ public class IotHubManagementUI extends Application {
     private IotHubClient senderIotHubClient = null;
     private IotHubClient receiverIotHubClient;
     private URI privateKeyFile;
+    private String clientId;
     private TextArea logStream;
     private TextField clientIdTextField;
     private TextField apiTokenTextField;
@@ -131,28 +131,26 @@ public class IotHubManagementUI extends Application {
             clientIdTextField = new TextField();
             clientIdTextField.setText(props.getProperty("clientId"));
             grid.add(clientIdTextField, 1, 1);
-            Label apiTokenLabel  = new Label("API Token:");
-            grid.add(apiTokenLabel, 0, 2);
             apiTokenTextField = new TextField();
             apiTokenTextField.setText(props.getProperty("apiToken"));
-            grid.add(apiTokenTextField, 1, 2);
+            grid.add(apiTokenTextField, 1, 1);
             Label aliasNameLabel = new Label("Alias name:");
-            grid.add(aliasNameLabel, 0, 3);
+            grid.add(aliasNameLabel, 0, 2);
             TextField aliasNameTextField = new TextField();
             aliasNameTextField.setText(props.getProperty("keyAlias"));
-            grid.add(aliasNameTextField, 1, 3);
+            grid.add(aliasNameTextField, 1, 2);
             Label aliasPasswordLabel = new Label("Alias password:");
-            grid.add(aliasPasswordLabel, 0, 4);
+            grid.add(aliasPasswordLabel, 0, 3);
             PasswordField aliasPasswordBox = new PasswordField();
             aliasPasswordBox.setText(props.getProperty("keyAliasPassword"));
-            grid.add(aliasPasswordBox, 1, 4);
+            grid.add(aliasPasswordBox, 1, 3);
             Label pw = new Label("Private Key password:");
-            grid.add(pw, 0, 5);
+            grid.add(pw, 0, 4);
             PasswordField pwBox = new PasswordField();
             pwBox.setText(props.getProperty("keystorePassword"));
-            grid.add(pwBox, 1, 5);
+            grid.add(pwBox, 1, 4);
             Label privateKeyLabel = new Label("Private Key:");
-            grid.add(privateKeyLabel, 0, 6);
+            grid.add(privateKeyLabel, 0, 5);
             try {
                 if (props.getProperty("keystoreLocation") != null && !props.getProperty("keystoreLocation").isEmpty()) {
                     privateKeyFile = new URI(props.getProperty("keystoreLocation"));
@@ -169,18 +167,17 @@ public class IotHubManagementUI extends Application {
                     privateKeyFile = file.toURI();
                 }
             });
-            grid.add(openButton, 1, 6);
+            grid.add(openButton, 1, 5);
             final Button connectButton = new Button("Connect to Bosch IoT Hub...");
             connectButton.setOnAction(connectActionEvent -> {
                 try {
                     if (!clientIdTextField.getText().isEmpty()) {
+                        clientId = clientIdTextField.getText();
                         if (senderIotHubClient == null || !senderIotHubClient.isConnected()) {
                             if (privateKeyFile != null) {
-                                senderIotHubClient = createIntegrationClient(clientIdTextField.getText(), apiTokenTextField.getText(),
-                                        privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText());
+                                senderIotHubClient = createIntegrationClient(clientIdTextField.getText(), privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText(),apiTokenTextField.getText());
                                 senderIotHubClient.connect();
-                                receiverIotHubClient = createIntegrationClient(clientIdTextField.getText() + ":receiver", apiTokenTextField.getText(),
-                                        privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText());
+                                receiverIotHubClient = createIntegrationClient(clientIdTextField.getText() + ":receiver", privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText(),apiTokenTextField.getText());
                                 receiverIotHubClient.connect();
                                 receiverIotHubClient.consume(inboundMessage -> MESSAGE_LOGGER.info("Received message for Topic <{}>, sender {} and payload: {}", inboundMessage.getTopicPath().toString(), inboundMessage.getSender().getIdentifier(), inboundMessage.getPayload().get().toString()));
                                 LOGGER.info("Creating Hub Integration Client for client ID <{" + clientIdTextField.getText() + "}>.");
@@ -207,7 +204,7 @@ public class IotHubManagementUI extends Application {
                     LOGGER.warn("Could not establish a connection: " + e.toString());
                 }
             });
-            grid.add(connectButton, 0, 7, 2, 1);
+            grid.add(connectButton, 0, 6, 2, 1);
 
             Scene dialogScene = new Scene(grid, 500, 300);
             dialog.setScene(dialogScene);
@@ -294,8 +291,7 @@ public class IotHubManagementUI extends Application {
         }
     }
 
-    private static IotHubClient createIntegrationClient(String clientId, String apiToken, URI keyStoreLocation, String keyStorePassword, 
-            String aliasName, String aliasPW) throws URISyntaxException {
+    private static IotHubClient createIntegrationClient(String clientId, URI keyStoreLocation, String keyStorePassword, String aliasName, String aliasPW, String apiToken) throws URISyntaxException {
 
 
       /*
@@ -305,7 +301,8 @@ public class IotHubManagementUI extends Application {
         final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
                 .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI) //
                 .keyStore(keyStoreLocation, keyStorePassword) //
-                .alias(aliasName, aliasPW).clientId(clientId)
+                .alias(aliasName, aliasPW) //
+                .clientId(clientId)
                 .apiToken(apiToken);
         // .proxy(URI.create("http://" + <proxy-host> + ":" + <proxy port>)); //
 
@@ -454,7 +451,6 @@ public class IotHubManagementUI extends Application {
         TableView<ACL> table = new TableView<ACL>();
         table.setEditable(true);
         table.setMinHeight(140);
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn clientIdCol = new TableColumn("ClientId");
         clientIdCol.setCellValueFactory(
                 new PropertyValueFactory<ACL, String>("clientId"));
@@ -633,7 +629,7 @@ public class IotHubManagementUI extends Application {
 
     }
 
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) {
         launch(args);
     }
 }

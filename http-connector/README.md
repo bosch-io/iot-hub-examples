@@ -9,7 +9,7 @@ This example shows an implementation of a general purpose HTTP Connector for the
 The following diagram shows how the Example HTTP Connector could work:
 
 ![overview](overview.png)
-
+ 
 
  
 # How to run it?

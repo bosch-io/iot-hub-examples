@@ -37,10 +37,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.bosch.iot.hub.integration.examples.util.HubClientUtil;
-
 import com.bosch.iot.hub.client.IotHubClient;
 import com.bosch.iot.hub.client.SendSuccess;
+import com.bosch.iot.hub.integration.examples.util.HubClientUtil;
 import com.bosch.iot.hub.model.acl.AccessControlList;
 import com.bosch.iot.hub.model.acl.AclEntry;
 import com.bosch.iot.hub.model.acl.AuthorizationSubject;
@@ -48,28 +47,24 @@ import com.bosch.iot.hub.model.message.Message;
 import com.bosch.iot.hub.model.message.Payload;
 
 /**
- * Preconditions of running the example :
+ * Preconditions of running the example (first check {@link HubMessagingReceiverExample} to be able to receive messages sent within this example) :
  * <ol>
- * <li>Register one solution as message sender, get solution_id, and upload the public key from /HubExampleClient.jks (or create your
- * own Key-pair)</li>
- * <li>Register one solution as message receiver, get solution_id, and upload the public key from /HubExampleClient.jks (or create your
- * own Key-pair)</li>
+ * <li>Register one solution as message sender, get solution_id and upload the public key from /HubClient.jks (see steps described at
+ * <a href="https://hub.apps.bosch-iot-cloud.com/dokuwiki/doku.php?id=020_getting_started:booking">Book the Bosch IoT Hub cloud service</a>)</li>
  * <li>Use sender solution_id as your system property "SENDER_SOLUTION_ID"</li>
- * <li>Use receiver solution_id as your system property "RECEIVER_SOLUTION_ID"</li>
+ * <li>Use receiver solution_id generated/used in {@link HubMessagingReceiverExample} as your system property "RECEIVER_SOLUTION_ID"</li>
  * <li>Configure system property "HUB_CLOUD_ENDPOINT", using actual Websocket endpoint of IoT Hub Service</li>
  * <li>Configure system property "PROXY_URI" if you have one, using format http://host:port</li>
  * </ol>
- *
- *Examples of System Properties:
+ * Examples of System Properties:
  * <br/>
  * <strong> -DSENDER_SOLUTION_ID=xx -DRECEIVER_SOLUTION_ID=xx -DHUB_CLOUD_ENDPOINT=wss://xx.com -DPROXY_URI=http://xx.com</strong>
  */
 public class HubMessagingSenderExample
 {
-   private static final AclEntry RECEIVER_ACL =
-      AclEntry.of(AuthorizationSubject.of(HubClientUtil.RECEIVER_SOLUTION_CLIENT_ID), RECEIVE);
+   private static final AclEntry RECEIVER_ACL = AclEntry.of(AuthorizationSubject.of(HubClientUtil.RECEIVER_SOLUTION_CLIENT_ID), RECEIVE);
    private static final AclEntry SENDER_ACL =
-      AclEntry.of(AuthorizationSubject.of(HubClientUtil.SENDER_SOLUTION_CLIENT_ID), ADMINISTRATE, RECEIVE, SEND);
+           AclEntry.of(AuthorizationSubject.of(HubClientUtil.SENDER_SOLUTION_CLIENT_ID), ADMINISTRATE, RECEIVE, SEND);
 
    private static final AccessControlList TOPIC_ACLS = AccessControlList.of(RECEIVER_ACL, SENDER_ACL);
 
@@ -88,8 +83,7 @@ public class HubMessagingSenderExample
       while ((consoleInput = consoleReader.readLine()) != null && !consoleInput.isEmpty())
       {
          // Send console input to solution Topic
-         final CompletableFuture<SendSuccess> sendFuture =
-            senderClient.send(Message.of(HubClientUtil.SOLUTION_TOPIC, Payload.of(consoleInput)));
+         final CompletableFuture<SendSuccess> sendFuture = senderClient.send(Message.of(HubClientUtil.SOLUTION_TOPIC, Payload.of(consoleInput)));
          sendFuture.get(HubClientUtil.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
       }
       consoleReader.close();

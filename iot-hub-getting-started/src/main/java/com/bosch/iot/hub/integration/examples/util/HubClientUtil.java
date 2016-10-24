@@ -41,10 +41,10 @@ public final class HubClientUtil
    public static final String RECEIVER_SOLUTION_CLIENT_ID = System.getProperty("RECEIVER_SOLUTION_ID");
 
    public static final URI HUB_CLOUD_ENDPOINT = URI.create(System.getProperty("HUB_CLOUD_ENDPOINT"));
-   public static final URI KEY_STORE_LOCATION = URI.create(HubTopicMgmtExample.class.getResource("/HubClient.jks").toString());
-
+   public static final URI KEY_STORE_LOCATION =
+           URI.create(HubTopicMgmtExample.class.getResource("/HubClient.jks").toString());
    public static final String KEY_STORE_PASSWORD = "123456";
-   public static final String ALIAS = "CR";
+   public static final String ALIAS = "HUB";
    public static final String ALIAS_PASSWORD = "123456";
    public static final String PROXY_URI = System.getProperty("PROXY_URI");
 
@@ -56,11 +56,11 @@ public final class HubClientUtil
    public static IotHubClient initSolutionClient(final String solutionId, final String apiToken)
    {
       IotHubClientBuilder.OptionalPropertiesStep propertiesSettable = DefaultIotHubClient.newBuilder() //
-         .endPoint(HUB_CLOUD_ENDPOINT) //
-         .keyStore(KEY_STORE_LOCATION, KEY_STORE_PASSWORD) //
-         .alias(ALIAS, ALIAS_PASSWORD) //
-         .clientId(solutionId) //
-         .apiToken(apiToken);
+              .endPoint(HUB_CLOUD_ENDPOINT) //
+              .keyStore(KEY_STORE_LOCATION, KEY_STORE_PASSWORD) //
+              .alias(ALIAS, ALIAS_PASSWORD) //
+              .clientId(solutionId) //
+              .apiToken(apiToken);
 
       if (null != PROXY_URI)
       {
