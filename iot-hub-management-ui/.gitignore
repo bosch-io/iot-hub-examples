@@ -1,0 +1,15 @@
+HubClient.jks
+HubClient_key.cer
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Maven
+target/

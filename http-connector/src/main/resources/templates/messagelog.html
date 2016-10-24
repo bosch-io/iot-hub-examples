@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Bosch IoT Hub - Example SSE Consumer</title>
+	 	<!--
+      	Bosch SI Example Code License
+      	Version 1.0, January 2016
+
+      	Copyright 2016 Bosch Software Innovations GmbH ("Bosch SI"). All rights reserved.
+
+     	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
+      	following conditions are met:
+
+      	1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
+      	disclaimer.
+
+      	2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+      	following disclaimer in the documentation and/or other materials provided with the distribution.
+
+      	BOSCH SI PROVIDES THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT
+      	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO
+      	THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF 
+      	ALL NECESSARY SERVICING, REPAIR OR CORRECTION. THIS SHALL NOT APPLY TO MATERIAL DEFECTS AND DEFECTS OF TITLE WHICH 
+      	BOSCH SI HAS FRAUDULENTLY CONCEALED. APART FROM THE CASES STIPULATED ABOVE, BOSCH SI SHALL BE LIABLE WITHOUT
+      	LIMITATION FOR INTENT OR GROSS NEGLIGENCE, FOR INJURIES TO LIFE, BODY OR HEALTH AND ACCORDING TO THE PROVISIONS OF
+      	THE GERMAN PRODUCT LIABILITY ACT (PRODUKTHAFTUNGSGESETZ). THE SCOPE OF A GUARANTEE GRANTED BY BOSCH SI SHALL REMAIN
+      	UNAFFECTED BY LIMITATIONS OF LIABILITY. IN ALL OTHER CASES, LIABILITY OF BOSCH SI IS EXCLUDED. THESE LIMITATIONS OF 
+      	LIABILITY ALSO APPLY IN REGARD TO THE FAULT OF VICARIOUS AGENTS OF BOSCH SI AND THE PERSONAL LIABILITY OF BOSCH SI'S
+      	EMPLOYEES, REPRESENTATIVES AND ORGANS.
+      	-->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" />
+		
+		<style type="text/css">
+			.log {
+				margin-top: .5em;
+				border: 1px solid black;
+				padding: .5em;
+				height: 40em;
+				width: 80em;
+				overflow-y: scroll;
+				overflow-x: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+			var source = /*[[ ${source}?: null ]]*/null;
+			source = source !== null ? source : "";
+			var topic = /*[[ ${topic}?: null ]]*/null;
+			topic = topic !== null ? topic : "";
+
+			if (typeof (EventSource) !== "undefined") {
+				var source = new EventSource(source);
+				source.addEventListener(topic, function(e) {
+					printEvent(e.type, e.data);
+				}, false);
+
+				source.onerror = function(e) {
+					var msg = '';
+					switch (e.target.readyState) {
+					case EventSource.CONNECTING:
+						msg = 'Reconnecting…';
+						break;
+					case EventSource.CLOSED:
+						msg = 'Connection closed.';
+						break;
+					}
+					document.getElementById("result").innerHTML += '<span style="color:red;">'
+						+ msg + "</span><br>";
+				};
+			} else {
+				document.getElementById("result").innerHTML = "<b>Sorry, your browser does not support server-sent events...";
+			}
+
+			function printEvent(name, data) {
+				var now = new Date();
+				document.getElementById("result").innerHTML += "<b>["
+					+ now.toUTCString()
+					+ "] Received event from server: </b><br>"
+					+ "<b>name</b>: " + name + "<br><b>data</b>: "
+					+ (data == null ? "none" : data) + "<br><br>";
+			}
+			/*]]>*/
+		</script>
+		<nav class="navbar navbar-inverse">
+			<div class="container">
+				<div class="navbar-header">
+					<div class="navbar-brand">Bosch IoT Hub - Example SSE Consumer</div>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+			<div class="starter-template">
+				<h3>
+					SSE log from source <b><span th:text="${source}" /></b>
+				</h3>
+				<div id="result" class="log"></div>
+			</div>
+		</div>
+	</body>
+</html>
