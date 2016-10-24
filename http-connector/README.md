@@ -16,7 +16,7 @@ The following diagram shows how the Example HTTP Connector could work:
 
 ## Create a Solution with a private/public key
 
-https://hub.apps.bosch-iot-cloud.com/dokuwiki/doku.php?id=020_getting_started:booking
+<a href="https://things.apps.bosch-iot-cloud.com/dokuwiki/doku.php?id=002_getting_started:cr_02_booking-cr-service.txt">Book the Bosch IoT Things cloud service</a>
 
 Add the HubClient.jks to the folder "src/main/resources".
 
@@ -206,4 +206,4 @@ The example HTTP Connector service has the following limitations:
 
 ## License
 
-See the cr-examples top level README.md file for license details.
+See the iot-hub-examples top level README.md file for license details.

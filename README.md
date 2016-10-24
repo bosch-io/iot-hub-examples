@@ -30,7 +30,7 @@ This is available via our public Maven repository. Add following Maven-Repositor
    </repositories>
    ..
 ```
-### Maven Depedency
+### Maven Dependency
 
 After adding the public repository as described above, you can simply use the HIC dependency to your `pom.xml`:
 

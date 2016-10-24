@@ -7,7 +7,7 @@ This example shows an implementation of a general user interface for the Bosch I
 
 ## Create a Solution with a private/public key
 
-https://hub.apps.bosch-iot-cloud.com/dokuwiki/doku.php?id=020_getting_started:booking
+<a href="https://things.apps.bosch-iot-cloud.com/dokuwiki/doku.php?id=002_getting_started:cr_02_booking-cr-service.txt">Book the Bosch IoT Things cloud service</a>
 
 Add your HubClient.jks file to the folder "src/main/resources".
 
@@ -67,4 +67,4 @@ The example Management UI has the following limitations:
 
 ## License
 
-See the cr-examples top level README.md file for license details.
+See the iot-hub-examples top level README.md file for license details.
