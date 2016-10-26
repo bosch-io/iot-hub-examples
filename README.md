@@ -1,7 +1,5 @@
 # Examples for the Bosch IoT Hub cloud service
 
-[![Join the chat at https://gitter.im/bsinno/cr-examples](https://badges.gitter.im/bsinno/cr-examples.svg)](https://gitter.im/bsinno/cr-examples?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 This repository contains examples for using the Bosch IoT Hub in the cloud.
 
 ## Preparation
