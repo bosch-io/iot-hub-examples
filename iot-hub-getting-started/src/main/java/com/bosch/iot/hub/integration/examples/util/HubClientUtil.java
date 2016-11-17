@@ -56,11 +56,11 @@ public final class HubClientUtil
    public static IotHubClient initSolutionClient(final String solutionId, final String apiToken)
    {
       IotHubClientBuilder.OptionalPropertiesStep propertiesSettable = DefaultIotHubClient.newBuilder() //
-              .endPoint(HUB_CLOUD_ENDPOINT) //
-              .keyStore(KEY_STORE_LOCATION, KEY_STORE_PASSWORD) //
-              .alias(ALIAS, ALIAS_PASSWORD) //
-              .clientId(solutionId) //
-              .apiToken(apiToken);
+         .keyStore(KEY_STORE_LOCATION, KEY_STORE_PASSWORD) //
+         .alias(ALIAS, ALIAS_PASSWORD) //
+         .clientId(solutionId) //
+         .apiToken(apiToken) //
+         .endPoint(HUB_CLOUD_ENDPOINT);
 
       if (null != PROXY_URI)
       {

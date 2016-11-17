@@ -89,7 +89,7 @@ public class HubSendResponseMessagingExample
               HubClientUtil.initSolutionClient(HubClientUtil.RECEIVER_SOLUTION_CLIENT_ID, HubClientUtil.CLIENT_API_TOKEN);
       receiverClient.connect();
 
-      receiverClient.consume("requestConsumer", inboundMessage ->
+      receiverClient.registerMessageHandler("requestConsumer", inboundMessage ->
       {
          try
          {
@@ -107,6 +107,8 @@ public class HubSendResponseMessagingExample
             LOGGER.error("[RECEIVER] Could not send reply message to message sender [{}]", inboundMessage.getSender().getIdentifier());
          }
       });
+      // Start consumption
+      receiverClient.startConsumption();
 
       // Sender create Topic and give Receiver RECEIVE permission
       senderClient.createTopic(HubClientUtil.SOLUTION_TOPIC, TOPIC_ACLS).get(HubClientUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
