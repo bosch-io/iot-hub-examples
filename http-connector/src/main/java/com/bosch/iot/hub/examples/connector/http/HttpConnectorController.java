@@ -62,7 +62,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter.SseEvent
 import com.bosch.iot.hub.client.DefaultIotHubClient;
 import com.bosch.iot.hub.client.IotHubClient;
 import com.bosch.iot.hub.client.IotHubClientBuilder;
-import com.bosch.iot.hub.client.handler.ConsumerRegistration;
+import com.bosch.iot.hub.client.handler.HandlerRegistration;
 import com.bosch.iot.hub.model.message.Message;
 import com.bosch.iot.hub.model.message.Payload;
 import com.bosch.iot.hub.model.topic.TopicPath;
@@ -181,7 +181,7 @@ public class HttpConnectorController
       try
       {
          Payload payload = requestEntity.hasBody() ? Payload.of(requestEntity.getBody()) : Payload.empty();
-         getMessageSender().send(Message.of(topic, payload)).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+         sender.send(Message.of(topic, payload)).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
       }
       catch (InterruptedException | ExecutionException | java.util.concurrent.TimeoutException e)
       {
@@ -223,7 +223,7 @@ public class HttpConnectorController
       final String subscriptionId = topic + ':' + request.getSession().getId();
 
       LOGGER
-         .info("Subscribing for server-sent events for messages with topic <{}> using client <{}>", topic, consumerId);
+              .info("Subscribing for server-sent events for messages with topic <{}> using client <{}>", topic, consumerId);
       final SseEmitter emitter = new SseEmitter(120000L);
       // after 2 minutes of inactivity the HTTP connection will be closed
       emitter.onCompletion(() ->
@@ -240,7 +240,7 @@ public class HttpConnectorController
 
       try
       {
-         ConsumerRegistration registration = getMessageConsumer().consume(message ->
+         HandlerRegistration registration = consumer.registerMessageHandler(message ->
          {
             final TopicPath messageTopicPath = message.getTopicPath();
             final Optional<Payload> payload = message.getPayload();
@@ -256,9 +256,9 @@ public class HttpConnectorController
                // write the message payload as one or more "data" fields in the event stream
                // if the payload contains '\n' or '\r' characters then it will be split into multiple "data" fields
                payload.map(Payload::getContentAsByteArray)//
-                  .map(payloadBytes -> payloadStringForMediaType(payloadBytes, payloadMediaType))//
-                  .map(PAYLOAD_LINES_PATTERN::splitAsStream).orElseGet(Stream::<String>empty)//
-                  .forEach(payloadLine -> sseBuilder.data(payloadLine, payloadMediaType));
+                       .map(payloadBytes -> payloadStringForMediaType(payloadBytes, payloadMediaType))//
+                       .map(PAYLOAD_LINES_PATTERN::splitAsStream).orElseGet(Stream::<String>empty)//
+                       .forEach(payloadLine -> sseBuilder.data(payloadLine, payloadMediaType));
 
                LOGGER.info("Sending server event for consumed message with topic <{}>", messageTopicPath);
                try
@@ -274,7 +274,7 @@ public class HttpConnectorController
             else
             {
                LOGGER.info("Dropping message with topic <{}>, topic path does not match the subscription path <{}>",
-                  messageTopicPath, topic);
+                       messageTopicPath, topic);
             }
 
          });
@@ -305,7 +305,7 @@ public class HttpConnectorController
    public ModelAndView consumedMessagesLog(HttpServletRequest request)
    {
       String source =
-         request.getRequestURL().toString().replaceFirst("/http-connector/messagelog/", "/http-connector/messages/");
+              request.getRequestURL().toString().replaceFirst("/http-connector/messagelog/", "/http-connector/messages/");
       String topic = extractTopicPath(request, "/http-connector/messagelog/**");
 
       LOGGER.info("Displaying server-sent events log for messages with topic <{}> using source <{}>", topic, source);
@@ -333,7 +333,7 @@ public class HttpConnectorController
 
       // endpoint of the bosch iot cloud service
       URI iotHubEndpoint =
-         URI.create(configuration.getProperty("iotHubEndpoint", "wss://hub.apps.bosch-iot-cloud.com"));
+              URI.create(configuration.getProperty("iotHubEndpoint", "wss://hub.apps.bosch-iot-cloud.com"));
 
       // location and password for the key store holding your private key
       // client authentication is implemented by a handshake using an asymmetric key-pair
@@ -351,11 +351,11 @@ public class HttpConnectorController
          final URI keystoreUri = Thread.currentThread().getContextClassLoader().getResource(keystoreLocation).toURI();
 
          final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-            .endPoint(iotHubEndpoint) //
-            .keyStore(keystoreUri, keystorePassword) //
-            .alias(keyAlias, keyAliasPassword) //
-            .clientId(clientId) //
-            .apiToken(clientApiToken);
+                 .keyStore(keystoreUri, keystorePassword) //
+                 .alias(keyAlias, keyAliasPassword) //
+                 .clientId(clientId) //
+                 .apiToken(clientApiToken) //
+                 .endPoint(iotHubEndpoint);
 
          // http proxy settings, optional
          String httpProxyHost = configuration.getProperty("httpProxyHost");
@@ -367,7 +367,7 @@ public class HttpConnectorController
          if (httpProxyHost != null && httpProxyPort != null)
          {
             IotHubClientBuilder.OptionalProxyPropertiesStep proxy =
-               builder.proxy(URI.create("http://" + httpProxyHost + ':' + httpProxyPort));
+                    builder.proxy(URI.create("http://" + httpProxyHost + ':' + httpProxyPort));
 
             if (httpProxyPrincipal != null && httpProxyPassword != null)
             {
@@ -456,48 +456,22 @@ public class HttpConnectorController
       return new String(payloadBytes, payloadCharSet);
    }
 
-   private IotHubClient getMessageSender()
-   {
-      // temporally, before invoking operations on the client, we need to check the client's connection and reconnect,
-      // if needed
-      // as currently the web socket connection opened by the hub client is silently closed on client inactivity
-      // which causes consequent attempts to communicate with the hub to fail
-      if (!sender.isConnected())
-      {
-         sender.connect();
-      }
-      return sender;
-   }
-
-   private IotHubClient getMessageConsumer()
-   {
-      // temporally, before invoking operations on the client, we need to check the client's connection and reconnect,
-      // if needed
-      // as currently the web socket connection opened by the hub client is silently closed on client inactivity
-      // which causes consequent attempts to communicate with the hub to fail
-      if (!consumer.isConnected())
-      {
-         consumer.connect();
-      }
-      return consumer;
-   }
-
    /**
-    * This class encapsulates the {@link SseEmitter} and {@link ConsumerRegistration} objects associated with each
+    * This class encapsulates the {@link SseEmitter} and {@link HandlerRegistration} objects associated with each
     * subscription for messages streamed as server-sent events.
     */
    private static class SubscriptionData
    {
 
       private SseEmitter emitter;
-      private ConsumerRegistration registration;
+      private HandlerRegistration registration;
 
-      public static SubscriptionData of(SseEmitter emitter, ConsumerRegistration registration)
+      public static SubscriptionData of(SseEmitter emitter, HandlerRegistration registration)
       {
          return new SubscriptionData(emitter, registration);
       }
 
-      private SubscriptionData(SseEmitter emitter, ConsumerRegistration registration)
+      private SubscriptionData(SseEmitter emitter, HandlerRegistration registration)
       {
          this.emitter = emitter;
          this.registration = registration;
@@ -508,7 +482,7 @@ public class HttpConnectorController
          return emitter;
       }
 
-      public ConsumerRegistration registration()
+      public HandlerRegistration registration()
       {
          return registration;
       }

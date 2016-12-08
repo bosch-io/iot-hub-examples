@@ -55,7 +55,7 @@ public class HttpBasicAuthenticationConfiguration extends WebSecurityConfigurerA
    protected void configure(AuthenticationManagerBuilder builder) throws Exception
    {
       final InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> configurer =
-         builder.inMemoryAuthentication().passwordEncoder(passwordEncoder());
+              builder.inMemoryAuthentication().passwordEncoder(passwordEncoder());
       // load and configure authorized devices list, passwords are sha-256 hashes
       Properties credentials = new Properties();
       try

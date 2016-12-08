@@ -55,6 +55,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.bosch.iot.hub</groupId>
+            <artifactId>iot-hub-client</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -72,16 +78,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.bosch.iot.hub</groupId>
-            <artifactId>iot-hub-client</artifactId>
-            <version>2.0.0.M9</version>
-        </dependency>
-        <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-cypher-compiler-2.1</artifactId>
             <version>2.1.8</version>
         </dependency>
-        
+
         <!-- needed to build test java client for sending http requests, 
              those dependencies will be excluded form the http connector's jar -->
         <dependency>

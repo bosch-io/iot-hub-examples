@@ -73,7 +73,7 @@ public class HubSendResponseMessagingExample
 
    private static final AclEntry RECEIVER_ACL = AclEntry.of(AuthorizationSubject.of(HubClientUtil.RECEIVER_SOLUTION_CLIENT_ID), RECEIVE);
    private static final AclEntry SENDER_ACL =
-      AclEntry.of(AuthorizationSubject.of(HubClientUtil.SENDER_SOLUTION_CLIENT_ID), ADMINISTRATE, RECEIVE, SEND);
+           AclEntry.of(AuthorizationSubject.of(HubClientUtil.SENDER_SOLUTION_CLIENT_ID), ADMINISTRATE, RECEIVE, SEND);
 
    private static final AccessControlList TOPIC_ACLS = AccessControlList.of(RECEIVER_ACL, SENDER_ACL);
 
@@ -81,25 +81,25 @@ public class HubSendResponseMessagingExample
    {
       // Create sender client
       IotHubClient senderClient =
-         HubClientUtil.initSolutionClient(HubClientUtil.SENDER_SOLUTION_CLIENT_ID, HubClientUtil.CLIENT_API_TOKEN);
+              HubClientUtil.initSolutionClient(HubClientUtil.SENDER_SOLUTION_CLIENT_ID, HubClientUtil.CLIENT_API_TOKEN);
       senderClient.connect();
 
       // Create receiver
       IotHubClient receiverClient =
-         HubClientUtil.initSolutionClient(HubClientUtil.RECEIVER_SOLUTION_CLIENT_ID, HubClientUtil.CLIENT_API_TOKEN);
+              HubClientUtil.initSolutionClient(HubClientUtil.RECEIVER_SOLUTION_CLIENT_ID, HubClientUtil.CLIENT_API_TOKEN);
       receiverClient.connect();
 
-      receiverClient.consume("requestConsumer", inboundMessage ->
+      receiverClient.registerMessageHandler("requestConsumer", inboundMessage ->
       {
          try
          {
             LOGGER.info("[RECEIVER] Received message with id <{}> from sender <{}> --- Sending response message as acknowledgement...",
-               inboundMessage.getId(), inboundMessage.getSender().getIdentifier());
+                    inboundMessage.getId(), inboundMessage.getSender().getIdentifier());
 
             // build and send reply message
             final ResponseMessage responseMessage = ResponseMessage.newBuilder(inboundMessage) //
-               .payload(String.format("[RECEIVER] Successfully received message with payload <%s>", inboundMessage.getPayload().get()))//
-               .build();
+                    .payload(String.format("[RECEIVER] Successfully received message with payload <%s>", inboundMessage.getPayload().get()))//
+                    .build();
             receiverClient.send(responseMessage).get(HubClientUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
          }
          catch (InterruptedException | ExecutionException | TimeoutException e)
@@ -107,6 +107,8 @@ public class HubSendResponseMessagingExample
             LOGGER.error("[RECEIVER] Could not send reply message to message sender [{}]", inboundMessage.getSender().getIdentifier());
          }
       });
+      // Start consumption
+      receiverClient.startConsumption();
 
       // Sender create Topic and give Receiver RECEIVE permission
       senderClient.createTopic(HubClientUtil.SOLUTION_TOPIC, TOPIC_ACLS).get(HubClientUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
@@ -118,18 +120,18 @@ public class HubSendResponseMessagingExample
       {
          // Send console input to solution Topic and register consumer for reply message
          final CompletableFuture<SendSuccess> sendFuture =
-            senderClient.send(Message.of(HubClientUtil.SOLUTION_TOPIC, Payload.of(consoleInput)), "responseConsumer", asyncResult ->
-            {
-               final InboundResponseMessage responseMessage = asyncResult.getMessage();
+                 senderClient.send(Message.of(HubClientUtil.SOLUTION_TOPIC, Payload.of(consoleInput)), "responseConsumer", asyncResult ->
+                 {
+                    final InboundResponseMessage responseMessage = asyncResult.getMessage();
 
-               LOGGER.info("[SENDER] Received response message from receiver <{}> related to sent message with id <{}>",
-                  responseMessage.getSender().getIdentifier(), responseMessage.getCorrelationId());
-               if (responseMessage.getPayload().isPresent())
-               {
-                  final String responsePayload = new String(responseMessage.getPayload().get().getContentAsByteArray());
-                  LOGGER.info("[SENDER] Response message payload <{}>", responsePayload);
-               }
-            });
+                    LOGGER.info("[SENDER] Received response message from receiver <{}> related to sent message with id <{}>",
+                            responseMessage.getSender().getIdentifier(), responseMessage.getCorrelationId());
+                    if (responseMessage.getPayload().isPresent())
+                    {
+                       final String responsePayload = new String(responseMessage.getPayload().get().getContentAsByteArray());
+                       LOGGER.info("[SENDER] Response message payload <{}>", responsePayload);
+                    }
+                 });
          sendFuture.get(HubClientUtil.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
       }
       consoleReader.close();

@@ -9,7 +9,7 @@ This example shows an implementation of a general purpose HTTP Connector for the
 The following diagram shows how the Example HTTP Connector could work:
 
 ![overview](overview.png)
-
+ 
 
  
 # How to run it?
@@ -122,7 +122,7 @@ Location: http://localhost:8080/http-connector/messages/com.example.http/devices
 Authenticated HTTP devices can consume messages form the IoT Hub service by subscribing for server-sent events streamed at [http://localhost:8088/http-connector/messages/**].
 The topic of interest is derived from the HTTP request URI, each event in the stream contains "name" field - specifying the message topic, and one or more "data" fields - carrying the message payload.
 The media type of the event "data" may be defined by including "x-payload-media-type" header in the HTTP request, "text/plain" will be assumed by default.
-Please note that '\n' and '\r' characters are delimiters for the various fields in the event stream, thus, a paylod that contains such characters would be split into multiple "data" fields in the stream.
+Please note that '\n' and '\r' characters are delimiters for the various fields in the event stream, thus, a payload that contains such characters would be split into multiple "data" fields in the stream.
 
 You can receive messages at your Topics through the HTTP connector by using a SSE enabled HTTP client like cURL or similar. 
 You need to authenticate (basic authentication) as one of the authorized devices which credentials are configured in the "credentials.properties" file.

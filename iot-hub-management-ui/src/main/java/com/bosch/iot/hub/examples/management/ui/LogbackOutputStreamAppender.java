@@ -64,4 +64,3 @@ public class LogbackOutputStreamAppender<E> extends OutputStreamAppender<E> {
     }
 
 }
-

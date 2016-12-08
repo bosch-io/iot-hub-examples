@@ -29,41 +29,42 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import com.bosch.iot.hub.integration.examples.util.HubClientUtil;
-
 import com.bosch.iot.hub.client.IotHubClient;
+import com.bosch.iot.hub.integration.examples.util.HubClientUtil;
 
 /**
  * Preconditions of running the example :
  * <ol>
- * <li>Register one solution as message sender, get solution_id, and upload the public key from /HubExampleClient.jks (or create your
- * own Key-pair)</li>
- * <li>Register one solution as message receiver, get solution_id, and upload the public key from /HubExampleClient.jks (or create your
- * own Key-pair)</li>
- * <li>Use sender solution_id as your system property "SENDER_SOLUTION_ID"</li>
+ * <li>Register one solution as message receiver, get solution_id and upload the public key from /HubClient.jks (see
+ * steps described at
+ * <a href="https://hub.apps.bosch-iot-cloud.com/dokuwiki/doku.php?id=020_getting_started:booking">Book the Bosch IoT
+ * Hub cloud service</a>)</li>
  * <li>Use receiver solution_id as your system property "RECEIVER_SOLUTION_ID"</li>
  * <li>Configure system property "HUB_CLOUD_ENDPOINT", using actual Websocket endpoint of IoT Hub Service</li>
  * <li>Configure system property "PROXY_URI" if you have one, using format http://host:port</li>
  * </ol>
- *
- *Examples of System Properties:
+ * Examples of System Properties:
  * <br/>
- * <strong> -DSENDER_SOLUTION_ID=xx -DRECEIVER_SOLUTION_ID=xx -DHUB_CLOUD_ENDPOINT=wss://xx.com -DPROXY_URI=http://xx.com</strong>
+ * <strong> -DRECEIVER_SOLUTION_ID=xx -DHUB_CLOUD_ENDPOINT=wss://xx.com -DPROXY_URI=http://xx.com</strong>
  */
 public class HubMessagingReceiverExample
 {
    public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException, IOException
    {
       // Create receiver client
-      IotHubClient receiverClient = HubClientUtil.initSolutionClient(HubClientUtil.RECEIVER_SOLUTION_CLIENT_ID, HubClientUtil.CLIENT_API_TOKEN);
+      final IotHubClient receiverClient =
+         HubClientUtil.initSolutionClient(HubClientUtil.RECEIVER_SOLUTION_CLIENT_ID, HubClientUtil.CLIENT_API_TOKEN);
       receiverClient.connect();
 
-      // Add consumer to message
-      receiverClient.consume(msg -> {
+      // register message handler
+      receiverClient.registerMessageHandler(msg ->
+      {
          // Do something with the message
          System.out.println(msg.getTopicPath().toString());
          System.out.println(msg.getPayload().get());
       });
+      // Start consumption
+      receiverClient.startConsumption();
 
       // Wait for console input to clean up the client
       System.in.read();

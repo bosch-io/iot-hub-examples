@@ -73,7 +73,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -91,8 +90,10 @@ public class IotHubManagementUI extends Application {
 
     private static final URI BOSCH_IOT_HUB_ENDPOINT_URI = URI.create("wss://hub.apps.bosch-iot-cloud.com");
     private IotHubClient senderIotHubClient = null;
+    private boolean isConnected = false;
     private IotHubClient receiverIotHubClient;
     private URI privateKeyFile;
+    private String clientId;
     private TextArea logStream;
     private TextField clientIdTextField;
     private TextField apiTokenTextField;
@@ -131,8 +132,8 @@ public class IotHubManagementUI extends Application {
             clientIdTextField = new TextField();
             clientIdTextField.setText(props.getProperty("clientId"));
             grid.add(clientIdTextField, 1, 1);
-            Label apiTokenLabel  = new Label("API Token:");
-            grid.add(apiTokenLabel, 0, 2);
+            Label apiTokenIdSetting = new Label("API Token:");
+            grid.add(apiTokenIdSetting, 0, 2);
             apiTokenTextField = new TextField();
             apiTokenTextField.setText(props.getProperty("apiToken"));
             grid.add(apiTokenTextField, 1, 2);
@@ -174,15 +175,14 @@ public class IotHubManagementUI extends Application {
             connectButton.setOnAction(connectActionEvent -> {
                 try {
                     if (!clientIdTextField.getText().isEmpty()) {
-                        if (senderIotHubClient == null || !senderIotHubClient.isConnected()) {
+                        clientId = clientIdTextField.getText();
+                        if (senderIotHubClient == null || !isConnected) {
                             if (privateKeyFile != null) {
-                                senderIotHubClient = createIntegrationClient(clientIdTextField.getText(), apiTokenTextField.getText(),
-                                        privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText());
+                                senderIotHubClient = createIntegrationClient(clientIdTextField.getText(), privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText(),apiTokenTextField.getText());
                                 senderIotHubClient.connect();
-                                receiverIotHubClient = createIntegrationClient(clientIdTextField.getText() + ":receiver", apiTokenTextField.getText(),
-                                        privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText());
+                                receiverIotHubClient = createIntegrationClient(clientIdTextField.getText() + ":receiver", privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText(),apiTokenTextField.getText());
                                 receiverIotHubClient.connect();
-                                receiverIotHubClient.consume(inboundMessage -> MESSAGE_LOGGER.info("Received message for Topic <{}>, sender {} and payload: {}", inboundMessage.getTopicPath().toString(), inboundMessage.getSender().getIdentifier(), inboundMessage.getPayload().get().toString()));
+                                receiverIotHubClient.registerMessageHandler(inboundMessage -> MESSAGE_LOGGER.info("Received message for Topic <{}>, sender {} and payload: {}", inboundMessage.getTopicPath().toString(), inboundMessage.getSender().getIdentifier(), inboundMessage.getPayload().get().toString()));
                                 LOGGER.info("Creating Hub Integration Client for client ID <{" + clientIdTextField.getText() + "}>.");
                                 connectionButton.setStyle("-fx-base: green;-fx-background-color: green;");
                                 dialog.close();
@@ -282,7 +282,7 @@ public class IotHubManagementUI extends Application {
     }
 
     private void disconnectHubClient(Button connectionButton) {
-        if (senderIotHubClient != null && senderIotHubClient.isConnected()) {
+        if (senderIotHubClient != null && isConnected) {
             receiverIotHubClient.disconnect();
             receiverIotHubClient.destroy();
             senderIotHubClient.disconnect();
@@ -294,8 +294,7 @@ public class IotHubManagementUI extends Application {
         }
     }
 
-    private static IotHubClient createIntegrationClient(String clientId, String apiToken, URI keyStoreLocation, String keyStorePassword, 
-            String aliasName, String aliasPW) throws URISyntaxException {
+    private static IotHubClient createIntegrationClient(String clientId, URI keyStoreLocation, String keyStorePassword, String aliasName, String aliasPW, String apiToken) throws URISyntaxException {
 
 
       /*
@@ -303,10 +302,11 @@ public class IotHubManagementUI extends Application {
        * Proxy configuration is optional and can be added if needed.
        */
         final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-                .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI) //
                 .keyStore(keyStoreLocation, keyStorePassword) //
-                .alias(aliasName, aliasPW).clientId(clientId)
-                .apiToken(apiToken);
+                .alias(aliasName, aliasPW) //
+                .clientId(clientId)
+                .apiToken(apiToken) //
+                .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI);
         // .proxy(URI.create("http://" + <proxy-host> + ":" + <proxy port>)); //
 
         return builder.build();
@@ -454,7 +454,6 @@ public class IotHubManagementUI extends Application {
         TableView<ACL> table = new TableView<ACL>();
         table.setEditable(true);
         table.setMinHeight(140);
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn clientIdCol = new TableColumn("ClientId");
         clientIdCol.setCellValueFactory(
                 new PropertyValueFactory<ACL, String>("clientId"));
@@ -633,7 +632,5 @@ public class IotHubManagementUI extends Application {
 
     }
 
-    public static void main(String[] args) throws MalformedURLException {
-        launch(args);
-    }
+    public static void main(String[] args) {launch(args);}
 }

@@ -58,13 +58,13 @@ import org.slf4j.LoggerFactory;
  * <li>receive messages form the IoT Hub service through the HTTP connector via consuming
  * server-sent events streamed at arbitrary URIs denoting the message topics</li>
  * </ul>
- * 
+ *
  * The HTTP devices use basic authentication to authenticate to the HTTP connector, thus user name
  * and password must be provided as arguments when running {@code HttpDevice} as Java application.
  * In order for the device to be authorized to communicate with the connector service, the user name
  * and SHA-256 password hash must be configured to the HTTP connector's
  * {@code credentials.properties} file.
- * 
+ *
  */
 public class HttpDevice {
 
@@ -76,7 +76,7 @@ public class HttpDevice {
 	/**
 	 * Creates new {@link HttpDevice} instance and configures a Jersey JAX-RS client for sending
 	 * HTTP PUT requests.
-	 * 
+	 *
 	 * @param username username used to authenticate to the HTTP connector using basic
 	 *            authentication
 	 * @param password password used to authenticate to the HTTP connector using basic
@@ -91,7 +91,7 @@ public class HttpDevice {
 	 * Sends a message via sending an HTTP POST request to the HTTP connector service at arbitrary
 	 * URIs denoting the message topics. The massage payload, if any, shall be included in the HTTP
 	 * request body.
-	 * 
+	 *
 	 * @param topic message topic of interest, will be included in the target URI for the request
 	 * @param payload optional message payload, can be {@code null}
 	 * @param mediaType media type for the message payload
@@ -116,7 +116,7 @@ public class HttpDevice {
 	/**
 	 * Starts consuming messages via subscribing for server-sent events streamed by the HTTP
 	 * connector service at arbitrary URIs denoting the message topics.
-	 * 
+	 *
 	 * @param topic message topic of interest, will be included in the target URI for the request
 	 * @param mediaType media type for the message payload
 	 */
@@ -151,8 +151,8 @@ public class HttpDevice {
 	 * and consume messages form the IoT Hub service through the example HTTP connector, consumed
 	 * messages will be printed in the console.</li>
 	 * </ul>
-	 * 
-	 * 
+	 *
+	 *
 	 * @param args arguments used to configure user name and password for the device
 	 */
 	public static void main(String[] args) {
@@ -171,26 +171,26 @@ public class HttpDevice {
 		in.lines().map(line -> line.split("\\s+")).forEach(input -> {
 			String command = input[0];
 			switch (command) {
-			case "send":
-				if (input.length >= 2 && input.length <= 4) {
-					final String topic = input[1];
-					final String payload = getElementAt(input, 2).orElse(null);
-					final String mediaType = getElementAt(input, 3).orElse(MediaType.TEXT_PLAIN);
-					device.sendMessage(topic, payload, mediaType);
-				} else {
-					LOGGER.error("Invalid input for command <send> {}", Arrays.asList(input));
-				}
-				break;
+				case "send":
+					if (input.length >= 2 && input.length <= 4) {
+						final String topic = input[1];
+						final String payload = getElementAt(input, 2).orElse(null);
+						final String mediaType = getElementAt(input, 3).orElse(MediaType.TEXT_PLAIN);
+						device.sendMessage(topic, payload, mediaType);
+					} else {
+						LOGGER.error("Invalid input for command <send> {}", Arrays.asList(input));
+					}
+					break;
 
-			case "consume":
-				if (input.length >= 2 && input.length <= 3) {
-					final String topic = input[1];
-					final String mediaType = getElementAt(input, 2).orElse(MediaType.TEXT_PLAIN);
-					device.consumeMessages(topic, mediaType);
-				} else {
-					LOGGER.error("Invalid input for command <consume> {}", Arrays.asList(input));
-				}
-				break;
+				case "consume":
+					if (input.length >= 2 && input.length <= 3) {
+						final String topic = input[1];
+						final String mediaType = getElementAt(input, 2).orElse(MediaType.TEXT_PLAIN);
+						device.consumeMessages(topic, mediaType);
+					} else {
+						LOGGER.error("Invalid input for command <consume> {}", Arrays.asList(input));
+					}
+					break;
 			}
 		});
 	}

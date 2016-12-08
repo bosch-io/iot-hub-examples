@@ -43,7 +43,35 @@
       <module>iot-hub-getting-started</module>
       <module>hello-world-connector</module>
       <module>hello-world-business-application</module>
-	   <module>http-connector</module>
+      <module>http-connector</module>
       <module>iot-hub-management-ui</module>
    </modules>
+
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>com.bosch.iot.hub</groupId>
+            <artifactId>iot-hub-client</artifactId>
+            <version>2.0.0</version>
+         </dependency>
+
+         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.7</version>
+         </dependency>
+
+         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.7</version>
+         </dependency>
+
+         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>1.7.21</version>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
 </project>

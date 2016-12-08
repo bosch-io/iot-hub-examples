@@ -21,7 +21,6 @@
       <appender-ref ref="MyCustomAppender"/>
    </logger>
 
-
    <root level="${LOG_LEVEL:-INFO}">
       <appender-ref ref="STDOUT"/>
    </root>

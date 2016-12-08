@@ -70,7 +70,7 @@ public final class HelloWorldConnector
 
    // ACLs (Access Control List) are used to define permissions on Topics.
    private static final AclEntry CONNECTOR_ACL_ENTRY =
-      AclEntry.of(CLIENT_ID, Permission.ADMINISTRATE, Permission.RECEIVE, Permission.SEND);
+           AclEntry.of(CLIENT_ID, Permission.ADMINISTRATE, Permission.RECEIVE, Permission.SEND);
    private static final AclEntry CONSUMER_ACL_ENTRY = AclEntry.of(CONSUMER_CLIENT_ID, Permission.RECEIVE);
    private static final AccessControlList TOPIC_ACL = AccessControlList.of(CONNECTOR_ACL_ENTRY, CONSUMER_ACL_ENTRY);
 
@@ -118,11 +118,11 @@ public final class HelloWorldConnector
        * Proxy configuration is optional and can be added if needed.
        */
       final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-         .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI) //
          .keyStore(KEYSTORE_LOCATION.toURI(), KEYSTORE_PASSWORD) //
          .alias(ALIAS, ALIAS_PASSWORD) //
          .clientId(CLIENT_ID) //
-         .apiToken(SOLUTION_API_TOKEN); //
+         .apiToken(SOLUTION_API_TOKEN) //
+         .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI);
       // .proxy(URI.create("http://" + <proxy-host> + ":" + <proxy port>)); //
 
       return builder.build();
