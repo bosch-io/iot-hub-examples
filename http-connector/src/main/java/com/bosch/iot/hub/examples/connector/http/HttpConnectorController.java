@@ -62,7 +62,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter.SseEvent
 import com.bosch.iot.hub.client.DefaultIotHubClient;
 import com.bosch.iot.hub.client.IotHubClient;
 import com.bosch.iot.hub.client.IotHubClientBuilder;
-import com.bosch.iot.hub.client.handler.ConsumerRegistration;
+import com.bosch.iot.hub.client.handler.HandlerRegistration;
 import com.bosch.iot.hub.model.message.Message;
 import com.bosch.iot.hub.model.message.Payload;
 import com.bosch.iot.hub.model.topic.TopicPath;
@@ -181,7 +181,7 @@ public class HttpConnectorController
       try
       {
          Payload payload = requestEntity.hasBody() ? Payload.of(requestEntity.getBody()) : Payload.empty();
-         getMessageSender().send(Message.of(topic, payload)).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+         sender.send(Message.of(topic, payload)).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
       }
       catch (InterruptedException | ExecutionException | java.util.concurrent.TimeoutException e)
       {
@@ -240,7 +240,7 @@ public class HttpConnectorController
 
       try
       {
-         ConsumerRegistration registration = getMessageConsumer().consume(message ->
+         HandlerRegistration registration = consumer.registerMessageHandler(message ->
          {
             final TopicPath messageTopicPath = message.getTopicPath();
             final Optional<Payload> payload = message.getPayload();
@@ -351,11 +351,11 @@ public class HttpConnectorController
          final URI keystoreUri = Thread.currentThread().getContextClassLoader().getResource(keystoreLocation).toURI();
 
          final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-                 .endPoint(iotHubEndpoint) //
                  .keyStore(keystoreUri, keystorePassword) //
                  .alias(keyAlias, keyAliasPassword) //
                  .clientId(clientId) //
-                 .apiToken(clientApiToken);
+                 .apiToken(clientApiToken) //
+                 .endPoint(iotHubEndpoint);
 
          // http proxy settings, optional
          String httpProxyHost = configuration.getProperty("httpProxyHost");
@@ -456,48 +456,22 @@ public class HttpConnectorController
       return new String(payloadBytes, payloadCharSet);
    }
 
-   private IotHubClient getMessageSender()
-   {
-      // temporally, before invoking operations on the client, we need to check the client's connection and reconnect,
-      // if needed
-      // as currently the web socket connection opened by the hub client is silently closed on client inactivity
-      // which causes consequent attempts to communicate with the hub to fail
-      if (!sender.isConnected())
-      {
-         sender.connect();
-      }
-      return sender;
-   }
-
-   private IotHubClient getMessageConsumer()
-   {
-      // temporally, before invoking operations on the client, we need to check the client's connection and reconnect,
-      // if needed
-      // as currently the web socket connection opened by the hub client is silently closed on client inactivity
-      // which causes consequent attempts to communicate with the hub to fail
-      if (!consumer.isConnected())
-      {
-         consumer.connect();
-      }
-      return consumer;
-   }
-
    /**
-    * This class encapsulates the {@link SseEmitter} and {@link ConsumerRegistration} objects associated with each
+    * This class encapsulates the {@link SseEmitter} and {@link HandlerRegistration} objects associated with each
     * subscription for messages streamed as server-sent events.
     */
    private static class SubscriptionData
    {
 
       private SseEmitter emitter;
-      private ConsumerRegistration registration;
+      private HandlerRegistration registration;
 
-      public static SubscriptionData of(SseEmitter emitter, ConsumerRegistration registration)
+      public static SubscriptionData of(SseEmitter emitter, HandlerRegistration registration)
       {
          return new SubscriptionData(emitter, registration);
       }
 
-      private SubscriptionData(SseEmitter emitter, ConsumerRegistration registration)
+      private SubscriptionData(SseEmitter emitter, HandlerRegistration registration)
       {
          this.emitter = emitter;
          this.registration = registration;
@@ -508,7 +482,7 @@ public class HttpConnectorController
          return emitter;
       }
 
-      public ConsumerRegistration registration()
+      public HandlerRegistration registration()
       {
          return registration;
       }

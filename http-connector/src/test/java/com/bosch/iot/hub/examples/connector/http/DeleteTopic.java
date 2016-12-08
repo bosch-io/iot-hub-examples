@@ -95,11 +95,11 @@ public class DeleteTopic {
             // proxy configuration is optional and can be added if the proxy configuration properties exist
             URI keystoreUri = Thread.currentThread().getContextClassLoader().getResource(keystoreLocation).toURI();
             final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-                    .endPoint(iotHubEndpoint) //
                     .keyStore(keystoreUri,keystorePassword) //
                     .alias(keyAlias, keyAliasPassword) //
                     .clientId(clientId) //
-                    .apiToken(apiToken);
+                    .apiToken(apiToken) //
+                    .endPoint(iotHubEndpoint);
 
             // http proxy settings, optional
             String httpProxyHost = configuration.getProperty("httpProxyHost");

@@ -90,6 +90,7 @@ public class IotHubManagementUI extends Application {
 
     private static final URI BOSCH_IOT_HUB_ENDPOINT_URI = URI.create("wss://hub.apps.bosch-iot-cloud.com");
     private IotHubClient senderIotHubClient = null;
+    private boolean isConnected = false;
     private IotHubClient receiverIotHubClient;
     private URI privateKeyFile;
     private String clientId;
@@ -175,13 +176,13 @@ public class IotHubManagementUI extends Application {
                 try {
                     if (!clientIdTextField.getText().isEmpty()) {
                         clientId = clientIdTextField.getText();
-                        if (senderIotHubClient == null || !senderIotHubClient.isConnected()) {
+                        if (senderIotHubClient == null || !isConnected) {
                             if (privateKeyFile != null) {
                                 senderIotHubClient = createIntegrationClient(clientIdTextField.getText(), privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText(),apiTokenTextField.getText());
                                 senderIotHubClient.connect();
                                 receiverIotHubClient = createIntegrationClient(clientIdTextField.getText() + ":receiver", privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText(),apiTokenTextField.getText());
                                 receiverIotHubClient.connect();
-                                receiverIotHubClient.consume(inboundMessage -> MESSAGE_LOGGER.info("Received message for Topic <{}>, sender {} and payload: {}", inboundMessage.getTopicPath().toString(), inboundMessage.getSender().getIdentifier(), inboundMessage.getPayload().get().toString()));
+                                receiverIotHubClient.registerMessageHandler(inboundMessage -> MESSAGE_LOGGER.info("Received message for Topic <{}>, sender {} and payload: {}", inboundMessage.getTopicPath().toString(), inboundMessage.getSender().getIdentifier(), inboundMessage.getPayload().get().toString()));
                                 LOGGER.info("Creating Hub Integration Client for client ID <{" + clientIdTextField.getText() + "}>.");
                                 connectionButton.setStyle("-fx-base: green;-fx-background-color: green;");
                                 dialog.close();
@@ -281,7 +282,7 @@ public class IotHubManagementUI extends Application {
     }
 
     private void disconnectHubClient(Button connectionButton) {
-        if (senderIotHubClient != null && senderIotHubClient.isConnected()) {
+        if (senderIotHubClient != null && isConnected) {
             receiverIotHubClient.disconnect();
             receiverIotHubClient.destroy();
             senderIotHubClient.disconnect();
@@ -301,11 +302,11 @@ public class IotHubManagementUI extends Application {
        * Proxy configuration is optional and can be added if needed.
        */
         final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-                .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI) //
                 .keyStore(keyStoreLocation, keyStorePassword) //
                 .alias(aliasName, aliasPW) //
                 .clientId(clientId)
-                .apiToken(apiToken);
+                .apiToken(apiToken) //
+                .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI);
         // .proxy(URI.create("http://" + <proxy-host> + ":" + <proxy port>)); //
 
         return builder.build();

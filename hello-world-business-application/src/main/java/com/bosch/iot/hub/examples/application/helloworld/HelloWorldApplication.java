@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.bosch.iot.hub.client.DefaultIotHubClient;
 import com.bosch.iot.hub.client.IotHubClient;
 import com.bosch.iot.hub.client.IotHubClientBuilder;
-import com.bosch.iot.hub.client.handler.ConsumerRegistration;
+import com.bosch.iot.hub.client.handler.HandlerRegistration;
 import com.bosch.iot.hub.model.message.MessageSender;
 import com.bosch.iot.hub.model.message.Payload;
 
@@ -75,7 +75,7 @@ public final class HelloWorldApplication
       iotHubClient.connect();
 
       // Create and register a new consumer.
-      final ConsumerRegistration consumerRegistration = iotHubClient.consume(inboundMessage -> {
+      final HandlerRegistration consumerRegistration = iotHubClient.registerMessageHandler(inboundMessage -> {
          final String payload = inboundMessage.getPayload() //
                  .map(Payload::getContentAsByteArray) //
                  .map(payloadBytes -> new String(payloadBytes, StandardCharsets.UTF_8)) //
@@ -108,11 +108,11 @@ public final class HelloWorldApplication
        * Proxy configuration is optional and can be added if needed.
        */
       final IotHubClientBuilder.OptionalPropertiesStep builder = DefaultIotHubClient.newBuilder() //
-              .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI) //
               .keyStore(KEYSTORE_LOCATION.toURI(), KEYSTORE_PASSWORD) //
               .alias(ALIAS, ALIAS_PASSWORD) //
               .clientId(CONSUMER_CLIENT_ID) //
-              .apiToken(SOLUTION_API_TOKEN); //
+              .apiToken(SOLUTION_API_TOKEN) //
+              .endPoint(BOSCH_IOT_HUB_ENDPOINT_URI);
       // .proxy(URI.create("http://" + <proxy-host> + ":" + <proxy port>)); //
 
       return builder.build();
