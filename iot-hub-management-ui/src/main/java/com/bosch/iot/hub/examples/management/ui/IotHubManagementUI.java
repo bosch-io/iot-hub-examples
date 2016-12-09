@@ -178,6 +178,7 @@ public class IotHubManagementUI extends Application {
                         clientId = clientIdTextField.getText();
                         if (senderIotHubClient == null || !isConnected) {
                             if (privateKeyFile != null) {
+                                isConnected = true;
                                 senderIotHubClient = createIntegrationClient(clientIdTextField.getText(), privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText(),apiTokenTextField.getText());
                                 senderIotHubClient.connect();
                                 receiverIotHubClient = createIntegrationClient(clientIdTextField.getText() + ":receiver", privateKeyFile, pwBox.getText(), aliasNameTextField.getText(), aliasPasswordBox.getText(),apiTokenTextField.getText());
@@ -283,6 +284,7 @@ public class IotHubManagementUI extends Application {
 
     private void disconnectHubClient(Button connectionButton) {
         if (senderIotHubClient != null && isConnected) {
+            isConnected = false;
             receiverIotHubClient.disconnect();
             receiverIotHubClient.destroy();
             senderIotHubClient.disconnect();
