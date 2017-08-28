@@ -1,45 +1,19 @@
 # Examples for the Bosch IoT Hub cloud service
 
-This repository contains examples for using the Bosch IoT Hub in the cloud.
+## The bad news
 
-## Preparation
+The BETA version offering of Bosch IoT Hub v 1.0 is discontinued.
+Thus, the marketplace will not offer to subscribe for its service plan.
 
-### Maven Repository
- 
-In order to be able to run the examples (or to implement your own), you need the "Bosch IoT Hub Client" (short: *HIC*).
-This is available via our public Maven repository. Add following Maven-Repository to your Maven `settings.xml`:
+## The good news
 
-```
-   ..
-   <repositories>
-      <repository>
-         <id>bosch-releases</id>
-         <url>https://maven.bosch-si.com/content/repositories/bosch-releases/</url>
-         <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-         </releases>
-         <snapshots>
-            <enabled>false</enabled>
-            <updatePolicy>daily</updatePolicy>
-         </snapshots>
-      </repository>
-      ..
-   </repositories>
-   ..
-```
-### Maven Dependency
+A new team is contributing to a great extent to the open source Eclipse IoT project and are building Hono.
+This will be the base of a new service offering Bosch IoT Hub v 2.0.
 
-After adding the public repository as described above, you can simply use the HIC dependency to your `pom.xml`:
+Get familiar with their concepts at http://www.eclipse.org/hono/.
+The Hono GitHub repository is located at https://github.com/eclipse/hono.
 
-```
-  <dependency>
-      <groupId>com.bosch.iot.hub</groupId>
-      <artifactId>iot-hub-client</artifactId>
-      <version>${hic.version}</version>
-   </dependency>
-```
+## Stay tuned
 
-## License
-
-The examples are made available under the terms of Bosch SI Example Code License. See individual files for details.
+In case you are interested in announcements regarding the upcoming version,
+or for any questions, please do not hesitate to contact us via email service-hub@bosch-si.com.
