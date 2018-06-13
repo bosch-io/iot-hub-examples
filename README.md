@@ -1,19 +1,25 @@
-# Examples for the Bosch IoT Hub cloud service
+# Examples for Bosch IoT Hub Cloud Service
+This repository contains examples for using the Bosch IoT Hub service in the cloud.
 
-## The bad news
+Bosch IoT Hub is part of the [Bosch IoT Suite](https://www.bosch-iot-suite.com), which is a cloud-based IoT platform provided by Bosch Software Innovations, as part of the Bosch Group.
+Further background information regarding the platform is also available at the [Bosch Software Innovations](https://www.bosch-si.com/iot-platform/bosch-iot-suite/homepage-bosch-iot-suite.html) site.
 
-The BETA version offering of Bosch IoT Hub v 1.0 is discontinued.
-Thus, the marketplace will not offer to subscribe for its service plan.
+## Examples
 
-## The good news
+The example code provided here shows a selection of the Bosch IoT Hub service functionality. However, the examples do not cover the complete service offering. If you need more information, please visit the links above or contact us.
 
-A new team is contributing to a great extent to the open source Eclipse IoT project and are building Hono.
-This will be the base of a new service offering Bosch IoT Hub v 2.0.
+### Example Consumer Application
+The example consumer application shows how to connect Hono client to the IoT Hub messaging (consumer) endpoint and create a telemetry consumer in order to consume telemetry messages. For details on how to build and start the example consumer application, please consult the example application [readme](example-consumer/README.md).
 
-Get familiar with their concepts at http://www.eclipse.org/hono/.
-The Hono GitHub repository is located at https://github.com/eclipse/hono.
+## Acknowledgments
+The IoT Hub examples make use of the following open source software:
 
-## Stay tuned
+* [Eclipse Hono](https://www.eclipse.org/hono/)
+* [Eclipse Vertx](https://vertx.io/)
 
-In case you are interested in announcements regarding the upcoming version,
-or for any questions, please do not hesitate to contact us via email service-hub@bosch-si.com.
+## License
+
+The examples are made available under the terms of Bosch SI Example Code License. See individual files for details.
+
+## Disclaimer
+All product names, service names, company names, logos, trademarks and brands are property of their respective owners. They are used in these examples for identification purposes only. Use of them does not imply any affiliation with or endorsement by them.

@@ -1,0 +1,5 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea/
+example-consumer/example-receiver.iml
+*.iml
+example-consumer/target/
