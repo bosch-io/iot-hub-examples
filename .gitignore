@@ -1,5 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
+target/
 .idea/
 example-consumer/example-receiver.iml
 *.iml
-example-consumer/target/
+.vertx/

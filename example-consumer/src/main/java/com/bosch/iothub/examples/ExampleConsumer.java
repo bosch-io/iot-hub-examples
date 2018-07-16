@@ -56,7 +56,7 @@ public class ExampleConsumer {
      * This is to ensure that client tries to re-connect in unforeseen situations.
      */
     private void connectWithRetry() {
-        connectHonoClient(getClientOptions(), this::onDisconnect).compose(connectedClient -> {
+        connectHonoClient(new ProtonClientOptions(), this::onDisconnect).compose(connectedClient -> {
             LOG.info("Connected to IoT Hub messaging endpoint.");
             return createTelemetryConsumer(connectedClient).compose(createdConsumer -> {
                 LOG.info("Consumer ready [tenant: {}, type: telemetry]. Hit ctrl-c to exit...", tenantId);
@@ -80,14 +80,9 @@ public class ExampleConsumer {
 
     Future<MessageConsumer> createTelemetryConsumer(final HonoClient connectedClient) {
         LOG.info("Creating telemetry consumer...");
-        return connectedClient.createTelemetryConsumer(tenantId,
-                this::handleMessage, this::onDetach);
+        return connectedClient.createTelemetryConsumer(tenantId, this::handleMessage, this::onDetach);
     }
 
-    private ProtonClientOptions getClientOptions() {
-        // disable re-connect handled by hono client as we re-connect on our own to re-establish receiver link
-        return new ProtonClientOptions().setReconnectAttempts(0);
-    }
 
     private void onDisconnect(final ProtonConnection con) {
         LOG.info("Client got disconnected. Reconnecting...");

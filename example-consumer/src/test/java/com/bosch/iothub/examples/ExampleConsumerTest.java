@@ -14,7 +14,7 @@ import org.eclipse.hono.client.HonoClient;
 import org.eclipse.hono.client.impl.HonoClientImpl;
 import org.eclipse.hono.config.ClientConfigProperties;
 import org.eclipse.hono.connection.ConnectionFactory;
-import org.eclipse.hono.connection.ConnectionFactoryImpl;
+import org.eclipse.hono.connection.impl.ConnectionFactoryImpl;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -42,6 +42,7 @@ public class ExampleConsumerTest {
         clientConfig.setHost(System.getProperty(IOT_HUB_MESSAGING_HOST));
         clientConfig.setUsername(System.getProperty(HONO_CLIENT_USERNAME));
         clientConfig.setPassword(System.getProperty(HONO_CLIENT_PASSWORD));
+        clientConfig.setReconnectAttempts(0);
         final ConnectionFactory factory = new ConnectionFactoryImpl(vertx, clientConfig);
         exampleConsumer = new ExampleConsumer();
         exampleConsumer.setHonoClient(new HonoClientImpl(vertx, factory, clientConfig));
@@ -61,7 +62,7 @@ public class ExampleConsumerTest {
 
         LOG.info("[{}]: Starting...", testName);
 
-        exampleConsumer.connectHonoClient(new ProtonClientOptions().setReconnectAttempts(0), null).setHandler(clientConnected -> {
+        exampleConsumer.connectHonoClient(new ProtonClientOptions(), null).setHandler(clientConnected -> {
             client = clientConnected.result();
             context.assertTrue(clientConnected.succeeded(), "[" + testName +"]: Hono client connection attempt test failed.");
             LOG.info("[{}]: Hono client connection attempt test succeeded.", testName);
