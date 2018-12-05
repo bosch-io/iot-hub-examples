@@ -84,7 +84,7 @@
         <dependency>
             <groupId>org.eclipse.hono</groupId>
             <artifactId>hono-client</artifactId>
-            <version>0.7-M1</version>
+            <version>0.8</version>
         </dependency>
         <!-- testing dependencies -->
         <dependency>
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-unit</artifactId>
-            <version>3.5.0</version>
+            <version>3.5.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
