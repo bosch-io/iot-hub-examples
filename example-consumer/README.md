@@ -23,7 +23,7 @@ All the information needed for setting these parameters can be found in the 'Cre
 To start the example consumer application (Linux & Mac), run:
 
 ~~~
-java -jar example-consumer/target/example-consumer-<VERSION>.jar --hono.client.tlsEnabled=true --hono.client.username={messaging-username} --hono.client.password={messaging-password} --tenant.id={tenant-id}
+java -jar example-consumer/target/example-consumer-1.0-SNAPSHOT.jar --hono.client.tlsEnabled=true --hono.client.username={messaging-username} --hono.client.password={messaging-password} --tenant.id={tenant-id}
 ~~~
 
 The consumer application is ready as soon as 'Consumer ready' is printed on the console. The startup can take up to 10 seconds.
