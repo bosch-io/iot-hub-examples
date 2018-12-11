@@ -11,6 +11,10 @@ The example code provided here shows a selection of the Bosch IoT Hub service fu
 ### Example Consumer Application
 The example consumer application shows how to connect Hono client to the IoT Hub messaging (consumer) endpoint and create a telemetry consumer in order to consume telemetry messages. For details on how to build and start the example consumer application, please consult the example application [readme](example-consumer/README.md).
 
+### Example Command & Control Application
+The application shows how to connect to the IoT Hub messaging endpoint and send a command to a device in one-way mode.
+See specific [readme](command-and-control/README.md) for more details.
+
 ## Acknowledgments
 The IoT Hub examples make use of the following open source software:
 

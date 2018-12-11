@@ -25,6 +25,7 @@
 
     <modules>
         <module>example-consumer</module>
+        <module>command-and-control</module>
     </modules>
     <build>
         <plugins>
