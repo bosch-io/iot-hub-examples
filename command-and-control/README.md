@@ -3,7 +3,7 @@
 The application shows how to connect to the IoT Hub messaging endpoint and send a command to a device in one-way mode.
 It sends automatically a "switchLight" command with the payload "On" to a device which must be connected.
 
-For a more complex example see the [Hono example application](https://github.com/eclipse/hono/tree/master/example)
+For a more complex example see the [Hono example application](https://github.com/eclipse/hono/tree/master/example).
 The guide only works for Linux & Mac systems, for MS Windows you have to adapt the paths and options.
 
 # Prerequisites  
