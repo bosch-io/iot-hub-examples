@@ -26,7 +26,7 @@ To receive commands, a device must subscribe to a specific control topic.
 As exemplary device the Eclipse Mosquitto MQTT client is used. Please make sure auth-id and the matching secret is set correctly.
   
 ~~~
-mosquitto_sub -d -h mqtt.bosch-iot-hub.com -p 8883 -u {auth-id}@{tenant-id} -P {secret} --capath /etc/ssl/certs/ -t control/+/+/req/#
+mosquitto_sub -d -h mqtt.bosch-iot-hub.com -p 8883 -k 30 -u {auth-id}@{tenant-id} -P {secret} --capath /etc/ssl/certs/ -t control/+/+/req/#
 ~~~
 
 ## Send commands 

@@ -83,7 +83,6 @@ public class ExampleConsumer {
         return connectedClient.createTelemetryConsumer(tenantId, this::handleMessage, this::onDetach);
     }
 
-
     private void onDisconnect(final ProtonConnection con) {
         LOG.info("Client got disconnected. Reconnecting...");
         connectWithRetry();

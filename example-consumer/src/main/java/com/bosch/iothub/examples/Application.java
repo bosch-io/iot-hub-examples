@@ -6,7 +6,6 @@ package com.bosch.iothub.examples;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 @SpringBootApplication
 public class Application {
 
