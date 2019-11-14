@@ -9,12 +9,9 @@ import io.vertx.core.dns.AddressResolverOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.proton.ProtonClientOptions;
-import org.eclipse.hono.client.HonoClient;
-import org.eclipse.hono.client.impl.HonoClientImpl;
+import org.eclipse.hono.client.ApplicationClientFactory;
+import org.eclipse.hono.client.HonoConnection;
 import org.eclipse.hono.config.ClientConfigProperties;
-import org.eclipse.hono.connection.ConnectionFactory;
-import org.eclipse.hono.connection.impl.ConnectionFactoryImpl;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -29,7 +26,7 @@ public class ExampleConsumerTest {
     private static final String HONO_CLIENT_PASSWORD = "hono.client.password";
 
     private static Vertx vertx;
-    private static HonoClient client;
+    private static ApplicationClientFactory clientFactory;
     private static ExampleConsumer exampleConsumer;
 
     @BeforeClass()
@@ -43,15 +40,15 @@ public class ExampleConsumerTest {
         clientConfig.setUsername(System.getProperty(HONO_CLIENT_USERNAME));
         clientConfig.setPassword(System.getProperty(HONO_CLIENT_PASSWORD));
         clientConfig.setReconnectAttempts(0);
-        final ConnectionFactory factory = new ConnectionFactoryImpl(vertx, clientConfig);
+        clientFactory = ApplicationClientFactory.create(HonoConnection.newConnection(vertx, clientConfig));
         exampleConsumer = new ExampleConsumer();
-        exampleConsumer.setHonoClient(new HonoClientImpl(vertx, factory, clientConfig));
+        exampleConsumer.setClientFactory(clientFactory);
         exampleConsumer.setTenantId(System.getProperty(IOT_HUB_TENANT_ID));
     }
 
     @AfterClass
     public static void afterClass() {
-        client.shutdown();
+        clientFactory.disconnect();
         vertx.close();
     }
 
@@ -62,11 +59,10 @@ public class ExampleConsumerTest {
 
         LOG.info("[{}]: Starting...", testName);
 
-        exampleConsumer.connectHonoClient(new ProtonClientOptions(), null).setHandler(clientConnected -> {
-            client = clientConnected.result();
+        exampleConsumer.clientFactoryConnect(null).setHandler(clientConnected -> {
             context.assertTrue(clientConnected.succeeded(), "[" + testName +"]: Hono client connection attempt test failed.");
             LOG.info("[{}]: Hono client connection attempt test succeeded.", testName);
-            client.isConnected().setHandler(result -> {
+            clientFactory.isConnected().setHandler(result -> {
                 context.assertTrue(result.succeeded(), "[" + testName +"]: Hono client failed to connect.");
                 LOG.info("[{}]: Hono client connected.", testName);
                 async.complete();
@@ -81,7 +77,7 @@ public class ExampleConsumerTest {
 
         LOG.info("[{}]: Starting...", testName);
 
-        exampleConsumer.createTelemetryConsumer(client).setHandler(consumerCreated -> {
+        exampleConsumer.createTelemetryConsumer().setHandler(consumerCreated -> {
             context.assertTrue(consumerCreated.succeeded(), "[" + testName +"]: Telemetry consumer creation failed.");
             LOG.info("[{}]: Telemetry consumer successfully created.", testName);
             async.complete();

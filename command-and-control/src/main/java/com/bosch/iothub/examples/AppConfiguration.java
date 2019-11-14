@@ -6,8 +6,9 @@ package com.bosch.iothub.examples;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.dns.AddressResolverOptions;
-import org.eclipse.hono.client.HonoClient;
-import org.eclipse.hono.client.impl.HonoClientImpl;
+import org.eclipse.hono.client.ApplicationClientFactory;
+import org.eclipse.hono.client.HonoConnection;
+import org.eclipse.hono.client.impl.HonoConnectionImpl;
 import org.eclipse.hono.config.ClientConfigProperties;
 import org.eclipse.hono.connection.ConnectionFactory;
 import org.eclipse.hono.connection.impl.ConnectionFactoryImpl;
@@ -63,12 +64,21 @@ public class AppConfiguration {
 
 
     /**
-     * Exposes a {@code HonoClient} as a Spring bean.
+     * Exposes a {@code HonoConnection} as a Spring bean.
      *
-     * @return The Hono client.
+     * @return The Hono connection.
      */
     @Bean
-    public HonoClient honoClient() {
-        return new HonoClientImpl(vertx(), honoConnectionFactory(), honoClientConfig());
+    public HonoConnection honoConnection() {
+        return new HonoConnectionImpl(vertx(), honoConnectionFactory(), honoClientConfig());
+    }
+
+    /**
+     * Exposes a {@code ApplicationClientFactory} as a Spring bean.
+     * @return The Application client factory
+     */
+    @Bean
+    public ApplicationClientFactory clientFactory() {
+        return ApplicationClientFactory.create(honoConnection());
     }
 }
