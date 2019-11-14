@@ -5,9 +5,8 @@ package com.bosch.iothub.examples;
 
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.proton.ProtonClientOptions;
+import org.eclipse.hono.client.ApplicationClientFactory;
 import org.eclipse.hono.client.CommandClient;
-import org.eclipse.hono.client.HonoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,21 +29,21 @@ public class OneWayCommand {
     @Value(value = "${device.id}")
     protected String deviceId;
 
-    private final HonoClient client;
+    private final ApplicationClientFactory clientFactory;
     private final ApplicationContext appContext;
 
     @Autowired
-    public OneWayCommand(HonoClient client, ApplicationContext appContext) {
-        this.client = client;
+    public OneWayCommand(ApplicationClientFactory clientFactory, ApplicationContext appContext) {
+        this.clientFactory = clientFactory;
         this.appContext = appContext;
     }
 
     @PostConstruct
     private void start() {
         LOG.info("Connecting to IoT Hub messaging endpoint...");
-        client.connect(new ProtonClientOptions()).compose(connectedClient -> {
+        clientFactory.connect().compose(connectedClient -> {
             LOG.info("Connected to IoT Hub messaging endpoint.");
-            final Future<CommandClient> commandClientFuture = connectedClient.getOrCreateCommandClient(tenantId, deviceId);
+            final Future<CommandClient> commandClientFuture = clientFactory.getOrCreateCommandClient(tenantId);
             commandClientFuture.setHandler(commandClientResult -> {
                 final CommandClient commandClient = commandClientResult.result();
                 sendOneWayCommand(commandClient);
@@ -60,7 +59,7 @@ public class OneWayCommand {
         LOG.info("Send command (one-way mode) to device '{}'", deviceId);
         commandClient.setRequestTimeout(TimeUnit.SECONDS.toMillis(2)); // increase to avoid errors with 200 ms default timeout
         final Buffer data = Buffer.buffer("on");
-        final Future<Void> commandResult = commandClient.sendOneWayCommand("switchLight", data);
+        final Future<Void> commandResult = commandClient.sendOneWayCommand(deviceId, "switchLight", data);
         commandResult.setHandler(result -> {
             if (result.succeeded()) {
                 LOG.info("Command successfully send");

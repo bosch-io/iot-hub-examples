@@ -4,13 +4,12 @@
 package com.bosch.iothub.examples;
 
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.proton.ProtonClientOptions;
-import io.vertx.proton.ProtonConnection;
 import org.apache.qpid.proton.amqp.messaging.Data;
 import org.apache.qpid.proton.message.Message;
-import org.eclipse.hono.client.HonoClient;
+import org.eclipse.hono.client.ApplicationClientFactory;
+import org.eclipse.hono.client.DisconnectListener;
+import org.eclipse.hono.client.HonoConnection;
 import org.eclipse.hono.client.MessageConsumer;
 import org.eclipse.hono.util.MessageHelper;
 import org.slf4j.Logger;
@@ -33,12 +32,12 @@ public class ExampleConsumer {
     private Vertx vertx;
 
     @Autowired
-    private HonoClient client;
+    private ApplicationClientFactory clientFactory;
 
     private long reconnectTimerId = -1;
 
-    void setHonoClient(HonoClient client) {
-        this.client = client;
+    void setClientFactory(ApplicationClientFactory clientFactory) {
+        this.clientFactory = clientFactory;
     }
 
     void setTenantId(String tenantId) {
@@ -56,9 +55,9 @@ public class ExampleConsumer {
      * This is to ensure that client tries to re-connect in unforeseen situations.
      */
     private void connectWithRetry() {
-        connectHonoClient(new ProtonClientOptions(), this::onDisconnect).compose(connectedClient -> {
+        clientFactoryConnect(this::onDisconnect).compose(connection -> {
             LOG.info("Connected to IoT Hub messaging endpoint.");
-            return createTelemetryConsumer(connectedClient).compose(createdConsumer -> {
+            return createTelemetryConsumer().compose(createdConsumer -> {
                 LOG.info("Consumer ready [tenant: {}, type: telemetry]. Hit ctrl-c to exit...", tenantId);
                 return Future.succeededFuture();
             });
@@ -73,17 +72,18 @@ public class ExampleConsumer {
         });
     }
 
-    Future<HonoClient> connectHonoClient(ProtonClientOptions clientOptions, Handler<ProtonConnection> disconnectHandler) {
+    Future<HonoConnection> clientFactoryConnect(DisconnectListener<HonoConnection> disconnectHandler) {
         LOG.info("Connecting to IoT Hub messaging endpoint...");
-        return client.connect(clientOptions, disconnectHandler);
+        clientFactory.addDisconnectListener(disconnectHandler);
+        return clientFactory.connect();
     }
 
-    Future<MessageConsumer> createTelemetryConsumer(final HonoClient connectedClient) {
+    Future<MessageConsumer> createTelemetryConsumer() {
         LOG.info("Creating telemetry consumer...");
-        return connectedClient.createTelemetryConsumer(tenantId, this::handleMessage, this::onDetach);
+        return clientFactory.createTelemetryConsumer(tenantId, this::handleMessage, this::onDetach);
     }
 
-    private void onDisconnect(final ProtonConnection con) {
+    private void onDisconnect(final HonoConnection connection) {
         LOG.info("Client got disconnected. Reconnecting...");
         connectWithRetry();
     }
