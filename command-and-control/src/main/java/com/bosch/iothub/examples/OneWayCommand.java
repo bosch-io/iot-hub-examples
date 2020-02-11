@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Bosch Software Innovations GmbH ("Bosch SI"). All rights reserved.
+ * Copyright 2018 Bosch.IO GmbH. All rights reserved.
  */
 package com.bosch.iothub.examples;
 
