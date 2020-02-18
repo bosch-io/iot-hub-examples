@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Bosch.IO GmbH. All rights reserved.
+ * Copyright 2020 Bosch.IO GmbH. All rights reserved.
  */
 package com.bosch.iothub.examples;
 

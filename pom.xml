@@ -59,7 +59,7 @@
                         <headerSection>
                             <key>COPYRIGHT_SECTION</key>
                             <defaultValue>
-                                <![CDATA[Copyright 2018 Bosch.IO GmbH. All rights reserved.]]></defaultValue>
+                                <![CDATA[Copyright 2020 Bosch.IO GmbH. All rights reserved.]]></defaultValue>
                             <ensureMatch>
                                 <![CDATA[Copyright \d{4} Bosch.IO GmbH. All rights reserved.]]></ensureMatch>
                         </headerSection>
