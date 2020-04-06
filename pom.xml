@@ -21,6 +21,8 @@
         <clmPassword></clmPassword>
         <tina-maven-plugin.version>1.6.0</tina-maven-plugin.version>
         <tina-knowledge-base.version>1.10.0</tina-knowledge-base.version>
+        <netty.version>4.1.48.Final</netty.version>
+        <netty.tcnative.version>2.0.28.Final</netty.tcnative.version>
     </properties>
 
     <modules>
