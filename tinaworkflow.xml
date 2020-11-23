@@ -1,0 +1,65 @@
+<workflow>
+    <analyzers>
+        <step>
+            <name>IQ Analyzer</name>
+            <classHint>com.bosch.tina.clm.SonatypeCLMCliAnalyzer
+            </classHint>
+            <configuration>
+                <entry key="server" value="${env.NEXUS_IQ_SERVER_URL}" />
+                <entry key="scan.result.path" value="${project.build.directory}/clm-scan-result.json" />
+                <entry key="app.id" value="bosch-iot-hub-examples" />
+                <entry key="username" value="${env.NEXUS_IQ_USERNAME}" />
+                <entry key="password" value="${env.NEXUS_IQ_PASSWORD}" />
+                <entry key="clm.pdf.path" value="${project.build.directory}/tina-maven-plugin/clm-report.pdf" />
+                <entry key="scan.patterns" value="${project.basedir}/**/target/dependencies/*.jar" />
+            </configuration>
+        </step>
+    </analyzers>
+    <processors>
+        <step>
+            <name>Source Validator</name>
+            <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SourceValidator
+            </classHint>
+            <configuration>
+                <entry key="missingSourcesSeverity" value="WARN" />
+                <entry key="failOnIncompleteSources" value="WARN" />
+            </configuration>
+        </step>
+        <step>
+            <name>Security Issue Validator</name>
+            <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SecurityIssueValidator
+            </classHint>
+            <configuration>
+                <entry key="forbiddenSecurityIssueStatusSeverity" value="FAIL" />
+                <entry key="securityIssueSeverityLimitSeverity" value="FAIL" />
+                <entry key="forbiddenSecurityIssueStatuses" value="Open" />
+                <entry key="securityIssueSeverityLimit" value="5.0" />
+                <entry key="ignoreSecurityIssueReferences" value="" />
+            </configuration>
+        </step>
+        <step>
+            <name>License Validator</name>
+            <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.LicenseValidator
+            </classHint>
+            <configuration>
+                <entry key="forbiddenLicenseSeverity" value="FAIL" />
+                <entry key="missingLicenseInformationSeverity" value="FAIL" />
+                <entry key="missingLicenseTextSeverity" value="WARN" />
+                <entry key="forbiddenLicenses"
+                    value="AGPL-1.0; AGPL-3.0; GPL-1.0; GPL-1.0+; GPL-2.0; GPL-2.0+; GPL-3.0; GPL-3.0+" />
+                <entry key="ignoredLicenses" value="" />
+            </configuration>
+        </step>
+    </processors>
+    <generators>
+        <step>
+            <name>PDF Report Generator</name>
+            <classHint>com.bosch.tina.workflow.generators.BoschDisclosureDocumentGenerator
+            </classHint>
+            <configuration>
+                <entry key="disclosure.doc.path"
+                    value="${project.build.directory}/tina-maven-plugin/TINA_disclosure.pdf" />
+            </configuration>
+        </step>
+    </generators>
+</workflow>
