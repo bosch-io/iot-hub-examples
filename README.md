@@ -1,3 +1,6 @@
+# [Repo Archived]
+This repo is archived because Bosch IoT Hub is no longer available as a standalone offering. IoT Hub is part of the Bosch IoT Device Management. If you are interested check out the [getting started guide for IoT Device Management](https://docs.bosch-iot-suite.com/device-management/Getting-started.html).
+
 # Examples for Bosch IoT Hub Cloud Service
 This repository contains examples for using the Bosch IoT Hub service in the cloud.
 
